@@ -47,6 +47,29 @@ export interface ImageColorModel {
   rank: number
 }
 
+export type FaceKind = 'realistic' | 'anime'
+
+export interface FaceModel {
+  id: number
+  imageId: number
+  groupId: number
+  kind: FaceKind
+  confidence: number
+  box: { x: number; y: number; width: number; height: number }
+  cropPath: string
+}
+
+export interface FaceGroupModel {
+  id: number
+  name: string | null
+  kind: FaceKind | 'mixed'
+  faceCount: number
+  imageCount: number
+  coverPath: string | null
+  hidden: boolean
+  createdAt: string
+}
+
 export interface FolderModel {
   id: number
   name: string

@@ -11,6 +11,12 @@ export const APP_SETTING_KEYS = {
   // Enable or disable CLIP AI indexing entirely
   CLIP_ENABLED: 'clip.enabled',
 
+  // Face recognition
+  FACE_ENABLED: 'faces.enabled',
+  FACE_DETECTION_MODEL: 'faces.detection_model',
+  FACE_DETECTION_THRESHOLD: 'faces.detection_threshold',
+  FACE_GROUPING_THRESHOLD: 'faces.grouping_threshold',
+
   // Thumbnails
   // WebP quality for generated thumbnails (1–100).
   // null → use sharp's default (lossless / full quality).
@@ -65,3 +71,26 @@ export const CLIP_DEFAULT_MODEL = CLIP_AVAILABLE_MODELS_DEFAULT[0].id
 export const CLIP_TEXT_TO_IMAGE_THRESHOLD_DEFAULT = 0.2
 export const CLIP_IMAGE_TO_IMAGE_THRESHOLD_DEFAULT = 0.6
 export const THUMBNAIL_QUALITY_DEFAULT: number | null = null
+export const FACE_DETECTION_THRESHOLD_DEFAULT = 0.12
+export const FACE_GROUPING_THRESHOLD_DEFAULT = 0.88
+export const FACE_DETECTION_MODEL_DEFAULT = 'owlvit-general'
+
+export interface FaceDetectionModelConfig {
+  id: string
+  name: string
+  description: string
+}
+
+export const FACE_DETECTION_MODELS: FaceDetectionModelConfig[] = [
+  {
+    id: 'owlvit-general',
+    name: 'OWL-ViT — General',
+    description: 'Broad zero-shot coverage for photos and artwork.',
+  },
+  {
+    id: 'deepghs-anime-v1.4-n',
+    name: 'DeepGHS — 2D optimized',
+    description:
+      'Small dedicated detector tuned for anime and illustrated faces.',
+  },
+]

@@ -242,6 +242,15 @@ export class ImageRepository {
       params.push(...filter.excludedTags)
     }
 
+    // Match images containing a face from any selected identity group.
+    if (filter?.faceGroupIds && filter.faceGroupIds.length > 0) {
+      const placeholders = filter.faceGroupIds.map(() => '?').join(',')
+      whereClauses.push(`i.id IN (
+        SELECT DISTINCT image_id FROM faces WHERE group_id IN (${placeholders})
+      )`)
+      params.push(...filter.faceGroupIds)
+    }
+
     // Filter by color
     let isColorFiltered = false
     let colorDistExpr = ''

@@ -2,6 +2,8 @@ import { createProgressToast } from '@/components/ui/toast'
 import {
   NotifyImageThumbnailGeneratedPartPayload,
   NotifyImageThumbnailGenerationCompletePayload,
+  NotifyFaceScanPartPayload,
+  NotifyFaceScanCompletePayload,
 } from '@main/types/notifier.shared'
 import { QueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -134,6 +136,80 @@ export function setupGlobalNotifier(queryClient?: QueryClient) {
           })
 
           queryClient?.invalidateQueries()
+        }
+        break
+
+      case 'face-scan':
+        if (notification.type === 'progress.part') {
+          const payload = notification.payload as NotifyFaceScanPartPayload
+          const sessionId = `faces:${payload.sessionId}`
+          let progressState = progressStateMap.get(sessionId)
+          const description =
+            payload.order === 0
+              ? 'Loading local face models…'
+              : `${payload.order} of ${payload.total} images · ${payload.facesFound} faces found`
+
+          if (!progressState) {
+            const toastId = toast.custom(
+              () =>
+                createProgressToast(
+                  payload.order,
+                  payload.total,
+                  'Scanning Faces',
+                  description,
+                ),
+              { duration: Infinity },
+            )
+            progressState = {
+              toastId,
+              currentProgress: payload.order,
+              totalProgress: payload.total,
+            }
+            progressStateMap.set(sessionId, progressState)
+          } else {
+            progressState.currentProgress = payload.order
+            progressState.totalProgress = payload.total
+            toast.custom(
+              () =>
+                createProgressToast(
+                  payload.order,
+                  payload.total,
+                  'Scanning Faces',
+                  description,
+                ),
+              { id: progressState.toastId, duration: Infinity },
+            )
+          }
+        } else if (notification.type === 'progress.complete') {
+          const payload = notification.payload as NotifyFaceScanCompletePayload
+          const sessionId = `faces:${payload.sessionId}`
+          const progressState = progressStateMap.get(sessionId)
+          if (progressState) {
+            toast.dismiss(progressState.toastId)
+            progressStateMap.delete(sessionId)
+          }
+
+          const description = `${payload.totalFaces} faces found in ${payload.totalProcessed} images${payload.totalFailed ? ` · ${payload.totalFailed} failed` : ''}`
+          if (payload.totalFailed && payload.totalProcessed === 0) {
+            toast.error('Face scan failed', { description })
+          } else if (payload.totalFailed) {
+            toast.warning('Face scan completed with errors', { description })
+          } else {
+            toast.success('Face scan complete', { description })
+          }
+          queryClient?.invalidateQueries({ queryKey: ['faces'] })
+          queryClient?.invalidateQueries({ queryKey: ['images'] })
+        } else if (notification.type === 'status') {
+          const payload = notification.payload as {
+            status: string
+            sessionId: string
+          }
+          const sessionId = `faces:${payload.sessionId}`
+          const progressState = progressStateMap.get(sessionId)
+          if (progressState) {
+            toast.dismiss(progressState.toastId)
+            progressStateMap.delete(sessionId)
+          }
         }
         break
 

@@ -45,7 +45,9 @@ export function FolderProvider({ children }: { children: React.ReactNode }) {
     }
     return null
   })
-  const [pendingFolderPath, setPendingFolderPath] = useState<string | null>(null)
+  const [pendingFolderPath, setPendingFolderPath] = useState<string | null>(
+    null,
+  )
   const [showSetupDialog, setShowSetupDialog] = useState(false)
   const [isRecentFoldersOpen, setRecentFoldersOpen] = useState(false)
   const [recentFolders, setRecentFolders] = useLocalStorage<string[]>(
@@ -143,6 +145,8 @@ export function FolderProvider({ children }: { children: React.ReactNode }) {
 
   const handleWizardStart = async (settings: {
     aiEnabled: boolean
+    faceEnabled: boolean
+    faceDetectionModel: string
     clipModel: string
     thumbnailQuality: number | null
   }) => {

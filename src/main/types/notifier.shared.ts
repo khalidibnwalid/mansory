@@ -13,3 +13,18 @@ export interface NotifyImageThumbnailGenerationCompletePayload {
   totalFailed: number
   sessionId: string
 }
+
+export interface NotifyFaceScanPartPayload {
+  order: number
+  total: number
+  facesFound: number
+  fileName?: string
+  sessionId: string
+}
+
+export interface NotifyFaceScanCompletePayload {
+  totalProcessed: number
+  totalFailed: number
+  totalFaces: number
+  sessionId: string
+}

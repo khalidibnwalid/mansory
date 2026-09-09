@@ -6,6 +6,7 @@ import imagesApi from './api/images'
 import systemApi from './api/system'
 import tagsApi from './api/tags'
 import settingsApi from './api/settings'
+import facesApi from './api/faces'
 
 // Custom APIs for renderer
 const api = {
@@ -15,6 +16,7 @@ const api = {
   general: generalApi,
   folders: foldersApi,
   settings: settingsApi,
+  faces: facesApi,
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

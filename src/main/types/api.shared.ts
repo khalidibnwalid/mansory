@@ -13,6 +13,7 @@ export interface SearchFilter {
   tags?: string[]
   tagMode?: 'AND' | 'OR'
   excludedTags?: string[]
+  faceGroupIds?: number[]
   color?: string
 
   aiSearchText?: string

@@ -18,6 +18,8 @@ import { Spinner } from '@/components/ui/spinner'
 import {
   CLIP_AVAILABLE_MODELS_DEFAULT,
   CLIP_DEFAULT_MODEL,
+  FACE_DETECTION_MODELS,
+  FACE_DETECTION_MODEL_DEFAULT,
 } from '@/lib/types/appSettingsKeys'
 import {
   SparkleIcon,
@@ -30,6 +32,7 @@ import {
   InfoIcon,
   ImageIcon,
   CaretDownIcon,
+  UsersThreeIcon,
 } from '@phosphor-icons/react'
 
 interface SetupWizardDialogProps {
@@ -38,6 +41,8 @@ interface SetupWizardDialogProps {
   folderPath: string
   onStart: (settings: {
     aiEnabled: boolean
+    faceEnabled: boolean
+    faceDetectionModel: string
     clipModel: string
     thumbnailQuality: number | null
   }) => Promise<void>
@@ -51,6 +56,10 @@ export function SetupWizardDialog({
 }: SetupWizardDialogProps) {
   const [step, setStep] = useState<1 | 2>(1)
   const [aiEnabled, setAiEnabled] = useState(true)
+  const [faceEnabled, setFaceEnabled] = useState(true)
+  const [faceDetectionModel, setFaceDetectionModel] = useState(
+    FACE_DETECTION_MODEL_DEFAULT,
+  )
   const [clipModel, setClipModel] = useState<string>(CLIP_DEFAULT_MODEL)
   const [isLossless, setIsLossless] = useState(true)
   const [thumbnailQuality, setThumbnailQuality] = useState<number>(90)
@@ -67,6 +76,8 @@ export function SetupWizardDialog({
       setLoading(true)
       await onStart({
         aiEnabled,
+        faceEnabled,
+        faceDetectionModel,
         clipModel,
         thumbnailQuality: isLossless ? null : thumbnailQuality,
       })
@@ -94,8 +105,12 @@ export function SetupWizardDialog({
                   Welcome to Gallery
                 </DialogTitle>
                 <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Let's set up <span className="font-semibold text-foreground">/{folderName}</span>. 
-                  Here is a quick look at the features you can use to organize your images.
+                  Let's set up{' '}
+                  <span className="font-semibold text-foreground">
+                    /{folderName}
+                  </span>
+                  . Here is a quick look at the features you can use to organize
+                  your images.
                 </p>
               </DialogHeader>
 
@@ -106,9 +121,12 @@ export function SetupWizardDialog({
                     <FolderOpenIcon className="size-5" weight="duotone" />
                   </div>
                   <div className="space-y-1 min-w-0">
-                    <h4 className="font-semibold text-foreground text-sm truncate">Folders & Tagging</h4>
+                    <h4 className="font-semibold text-foreground text-sm truncate">
+                      Folders & Tagging
+                    </h4>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Browse your physical subdirectories and organize them using recursive, nested tag hierarchies.
+                      Browse your physical subdirectories and organize them
+                      using recursive, nested tag hierarchies.
                     </p>
                   </div>
                 </div>
@@ -119,9 +137,12 @@ export function SetupWizardDialog({
                     <PaletteIcon className="size-5" weight="duotone" />
                   </div>
                   <div className="space-y-1 min-w-0">
-                    <h4 className="font-semibold text-foreground text-sm truncate">Color Filtering</h4>
+                    <h4 className="font-semibold text-foreground text-sm truncate">
+                      Color Filtering
+                    </h4>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Dominant colors are automatically extracted from each image so you can filter and search by hues.
+                      Dominant colors are automatically extracted from each
+                      image so you can filter and search by hues.
                     </p>
                   </div>
                 </div>
@@ -132,9 +153,12 @@ export function SetupWizardDialog({
                     <MagnifyingGlassIcon className="size-5" weight="duotone" />
                   </div>
                   <div className="space-y-1 min-w-0">
-                    <h4 className="font-semibold text-foreground text-sm truncate">Unified Search</h4>
+                    <h4 className="font-semibold text-foreground text-sm truncate">
+                      Unified Search
+                    </h4>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Combine folders, tags, colors, and dates in a single search bar to instantly narrow down matches.
+                      Combine folders, tags, colors, and dates in a single
+                      search bar to instantly narrow down matches.
                     </p>
                   </div>
                 </div>
@@ -145,9 +169,28 @@ export function SetupWizardDialog({
                     <SparkleIcon className="size-5" weight="duotone" />
                   </div>
                   <div className="space-y-1 min-w-0">
-                    <h4 className="font-semibold text-foreground text-sm truncate">AI Suggestions</h4>
+                    <h4 className="font-semibold text-foreground text-sm truncate">
+                      AI Suggestions
+                    </h4>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Get smart suggestions for tagging and find visually similar images based on semantic features.
+                      Get smart suggestions for tagging and find visually
+                      similar images based on semantic features.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Face Recognition */}
+                <div className="flex gap-3 p-4 rounded-xl border border-border/40 bg-card/25 hover:bg-card/40 transition-colors md:col-span-2">
+                  <div className="size-9 rounded-lg bg-foreground/5 text-foreground flex items-center justify-center shrink-0">
+                    <UsersThreeIcon className="size-5" weight="duotone" />
+                  </div>
+                  <div className="space-y-1 min-w-0">
+                    <h4 className="font-semibold text-foreground text-sm truncate">
+                      Face Recognition
+                    </h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Find and group familiar faces across photos and artwork,
+                      then name, filter, and merge identities locally.
                     </p>
                   </div>
                 </div>
@@ -174,7 +217,8 @@ export function SetupWizardDialog({
                         AI Semantic Indexing
                       </span>
                       <p className="text-xs text-muted-foreground">
-                        Enables natural language text-to-image search, visual similarity matching, and auto tag suggestions.
+                        Enables natural language text-to-image search, visual
+                        similarity matching, and auto tag suggestions.
                       </p>
                     </div>
                     <Switch
@@ -191,7 +235,8 @@ export function SetupWizardDialog({
                             CLIP Neural Model
                           </label>
                           <p className="text-[10px] text-muted-foreground">
-                            Select a local model. Larger models are more accurate but run slower.
+                            Select a local model. Larger models are more
+                            accurate but run slower.
                           </p>
                         </div>
 
@@ -229,7 +274,9 @@ export function SetupWizardDialog({
                         <div className="flex items-start gap-1.5 text-[10px] text-muted-foreground bg-muted/40 p-2.5 rounded-lg border border-border/20">
                           <InfoIcon className="size-3.5 text-foreground/60 shrink-0 mt-0.5" />
                           <span>
-                            Selected model uses {selectedModelInfo.dimension} dimensions. First-time load will download files (~150MB-350MB) and save embeddings locally.
+                            Selected model uses {selectedModelInfo.dimension}{' '}
+                            dimensions. First-time load will download files
+                            (~150MB-350MB) and save embeddings locally.
                           </span>
                         </div>
                       )}
@@ -238,8 +285,90 @@ export function SetupWizardDialog({
                     <div className="p-3 rounded-lg bg-muted/40 border border-border/20 text-[10px] text-muted-foreground flex items-start gap-2">
                       <InfoIcon className="size-3.5 text-foreground/60 shrink-0 mt-0.5" />
                       <span>
-                        AI features are disabled. No neural models will be downloaded, saving storage space and system memory.
+                        AI features are disabled. No neural models will be
+                        downloaded, saving storage space and system memory.
                       </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Face Recognition Settings */}
+                <div className="p-4 rounded-xl border border-border/40 bg-card/25 space-y-3">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="space-y-1 max-w-[80%]">
+                      <span className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                        <UsersThreeIcon className="size-4 text-foreground/80" />
+                        Face Recognition
+                      </span>
+                      <p className="text-xs text-muted-foreground">
+                        Detect and group faces across photos and artwork. Face
+                        crops and identity data stay inside this gallery.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={faceEnabled}
+                      onCheckedChange={setFaceEnabled}
+                    />
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/40 border border-border/20 text-[10px] text-muted-foreground flex items-start gap-2">
+                    <InfoIcon className="size-3.5 text-foreground/60 shrink-0 mt-0.5" />
+                    <span>
+                      {faceEnabled
+                        ? 'Faces across photos and artwork are supported. Start a scan from People & Characters after setup.'
+                        : 'Face scanning is disabled. You can enable it later in Settings.'}
+                    </span>
+                  </div>
+                  {faceEnabled && (
+                    <div className="flex flex-col justify-between gap-3 rounded-xl border border-border/30 bg-background/40 p-3 sm:flex-row sm:items-center">
+                      <div>
+                        <p className="text-xs font-semibold">Detection model</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {
+                            FACE_DETECTION_MODELS.find(
+                              model => model.id === faceDetectionModel,
+                            )?.description
+                          }
+                        </p>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full justify-between font-mono text-xs sm:w-56"
+                          >
+                            <span className="truncate">
+                              {
+                                FACE_DETECTION_MODELS.find(
+                                  model => model.id === faceDetectionModel,
+                                )?.name
+                              }
+                            </span>
+                            <CaretDownIcon className="size-4 opacity-50" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-72">
+                          {FACE_DETECTION_MODELS.map(model => (
+                            <DropdownMenuItem
+                              key={model.id}
+                              onSelect={() => setFaceDetectionModel(model.id)}
+                              className="cursor-pointer"
+                            >
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-semibold">
+                                  {model.name}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground">
+                                  {model.description}
+                                </p>
+                              </div>
+                              {model.id === faceDetectionModel && (
+                                <CheckIcon className="size-3 text-primary" />
+                              )}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   )}
                 </div>
@@ -253,11 +382,14 @@ export function SetupWizardDialog({
                         Thumbnail Cache Settings
                       </span>
                       <p className="text-xs text-muted-foreground">
-                        Select the WebP compression quality. Lower quality saves storage space; higher quality provides sharper details.
+                        Select the WebP compression quality. Lower quality saves
+                        storage space; higher quality provides sharper details.
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0 bg-background/50 border border-border/20 px-2 py-1 rounded-lg">
-                      <span className="text-[10px] font-medium text-muted-foreground">Lossless</span>
+                      <span className="text-[10px] font-medium text-muted-foreground">
+                        Lossless
+                      </span>
                       <Switch
                         checked={isLossless}
                         onCheckedChange={setIsLossless}
@@ -268,8 +400,12 @@ export function SetupWizardDialog({
                   {!isLossless ? (
                     <div className="space-y-3 pt-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">Compression Level</span>
-                        <span className="font-mono font-bold text-foreground">{thumbnailQuality}%</span>
+                        <span className="text-muted-foreground">
+                          Compression Level
+                        </span>
+                        <span className="font-mono font-bold text-foreground">
+                          {thumbnailQuality}%
+                        </span>
                       </div>
                       <Slider
                         value={[thumbnailQuality]}
@@ -280,14 +416,18 @@ export function SetupWizardDialog({
                       />
                       <div className="text-[10px] text-muted-foreground flex items-start gap-1">
                         <InfoIcon className="size-3.5 shrink-0 text-foreground/60 mt-0.5" />
-                        <span>Recommended quality is 90% for a balanced compression-to-quality ratio.</span>
+                        <span>
+                          Recommended quality is 90% for a balanced
+                          compression-to-quality ratio.
+                        </span>
                       </div>
                     </div>
                   ) : (
                     <div className="p-3 rounded-lg bg-muted/40 border border-border/20 text-[10px] text-muted-foreground flex items-start gap-2">
                       <InfoIcon className="size-3.5 text-foreground/60 shrink-0 mt-0.5" />
                       <span>
-                        Lossless mode stores full-fidelity thumbnails, which consumes significantly more storage space.
+                        Lossless mode stores full-fidelity thumbnails, which
+                        consumes significantly more storage space.
                       </span>
                     </div>
                   )}

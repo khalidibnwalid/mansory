@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react'
 import { useFolder } from './FolderProvider'
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage'
 
@@ -8,6 +14,7 @@ export interface ImageFilter {
   tags: string[]
   tagMode: 'AND' | 'OR'
   excludedTags: string[]
+  faceGroupIds: number[]
   color?: string
   aiSearchText?: string
   aiSearchImage?: string
@@ -32,6 +39,8 @@ interface SearchProvider {
   setTagMode: React.Dispatch<React.SetStateAction<'AND' | 'OR'>>
   excludedTags: string[]
   setExcludedTags: React.Dispatch<React.SetStateAction<string[]>>
+  faceGroupIds: number[]
+  setFaceGroupIds: React.Dispatch<React.SetStateAction<number[]>>
   searchColor: string | null
   setSearchColor: React.Dispatch<React.SetStateAction<string | null>>
   aiSearchText: string
@@ -67,6 +76,7 @@ export interface FolderSearchState {
   filterTags: string[]
   tagMode: 'AND' | 'OR'
   excludedTags: string[]
+  faceGroupIds: number[]
   searchColor: string | null
   aiSearchText: string
   aiSearchImage: string | null
@@ -85,6 +95,7 @@ const createDefaultState = (): FolderSearchState => ({
   filterTags: [],
   tagMode: 'OR',
   excludedTags: [],
+  faceGroupIds: [],
   searchColor: null,
   aiSearchText: '',
   aiSearchImage: null,
@@ -98,10 +109,9 @@ const createDefaultState = (): FolderSearchState => ({
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const { folderPath } = useFolder()
-  const [states, setStates] = useLocalStorage<Record<string, FolderSearchState>>(
-    'folder-search-states',
-    {},
-  )
+  const [states, setStates] = useLocalStorage<
+    Record<string, FolderSearchState>
+  >('folder-search-states', {})
 
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearching, setIsSearching] = useState(false)
@@ -109,6 +119,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [filterTags, setFilterTags] = useState<string[]>([])
   const [tagMode, setTagMode] = useState<'AND' | 'OR'>('OR')
   const [excludedTags, setExcludedTags] = useState<string[]>([])
+  const [faceGroupIds, setFaceGroupIds] = useState<number[]>([])
   const [searchColor, setSearchColor] = useState<string | null>(null)
   const [aiSearchText, setAiSearchText] = useState('')
   const [aiSearchImage, setAiSearchImage] = useState<string | null>(null)
@@ -134,6 +145,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       filterTags,
       tagMode,
       excludedTags,
+      faceGroupIds,
       searchColor,
       aiSearchText,
       aiSearchImage,
@@ -151,6 +163,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     filterTags,
     tagMode,
     excludedTags,
+    faceGroupIds,
     searchColor,
     aiSearchText,
     aiSearchImage,
@@ -168,6 +181,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     tags: filterTags,
     tagMode,
     excludedTags,
+    faceGroupIds,
     color: searchColor ?? undefined,
     aiSearchText: aiSearchText || undefined,
     aiSearchImage: aiSearchImage || undefined,
@@ -186,6 +200,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     setFilterTags([])
     setTagMode('OR')
     setExcludedTags([])
+    setFaceGroupIds([])
     setSearchColor(null)
     setAiSearchText('')
     setAiSearchImage(null)
@@ -216,6 +231,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       setFilterTags(saved.filterTags)
       setTagMode(saved.tagMode)
       setExcludedTags(saved.excludedTags)
+      setFaceGroupIds(saved.faceGroupIds || [])
       setSearchColor(saved.searchColor)
       setAiSearchText(saved.aiSearchText)
       setAiSearchImage(saved.aiSearchImage)
@@ -263,6 +279,8 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         setTagMode,
         excludedTags,
         setExcludedTags,
+        faceGroupIds,
+        setFaceGroupIds,
         searchColor,
         setSearchColor,
         aiSearchText,

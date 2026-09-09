@@ -6,6 +6,9 @@ import {
   CLIP_TEXT_TO_IMAGE_THRESHOLD_DEFAULT,
   CLIP_IMAGE_TO_IMAGE_THRESHOLD_DEFAULT,
   THUMBNAIL_QUALITY_DEFAULT,
+  FACE_DETECTION_THRESHOLD_DEFAULT,
+  FACE_GROUPING_THRESHOLD_DEFAULT,
+  FACE_DETECTION_MODEL_DEFAULT,
 } from './appSettingsKeys'
 import Database from 'better-sqlite3'
 import { InferValueTypeKey } from '@main/types/models.shared'
@@ -51,15 +54,27 @@ export function seedAppSettings(db: Database.Database): void {
     CLIP_IMAGE_TO_IMAGE_THRESHOLD_DEFAULT,
     'number',
   )
-  seedIfMissing(
-    APP_SETTING_KEYS.CLIP_ENABLED,
-    true,
-    'boolean',
-  )
+  seedIfMissing(APP_SETTING_KEYS.CLIP_ENABLED, true, 'boolean')
   // THUMBNAIL_QUALITY is nullable – store as 'null' string so it round-trips cleanly
   seedIfMissing(
     APP_SETTING_KEYS.THUMBNAIL_QUALITY,
     THUMBNAIL_QUALITY_DEFAULT,
+    'number',
+  )
+  seedIfMissing(APP_SETTING_KEYS.FACE_ENABLED, true, 'boolean')
+  seedIfMissing(
+    APP_SETTING_KEYS.FACE_DETECTION_MODEL,
+    FACE_DETECTION_MODEL_DEFAULT,
+    'string',
+  )
+  seedIfMissing(
+    APP_SETTING_KEYS.FACE_DETECTION_THRESHOLD,
+    FACE_DETECTION_THRESHOLD_DEFAULT,
+    'number',
+  )
+  seedIfMissing(
+    APP_SETTING_KEYS.FACE_GROUPING_THRESHOLD,
+    FACE_GROUPING_THRESHOLD_DEFAULT,
     'number',
   )
 }

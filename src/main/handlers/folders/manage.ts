@@ -243,6 +243,8 @@ export async function initWithSettingsHandler(
   folderPath: string,
   settings: {
     aiEnabled: boolean
+    faceEnabled: boolean
+    faceDetectionModel: string
     clipModel: string
     thumbnailQuality: number | null
   },
@@ -250,6 +252,22 @@ export async function initWithSettingsHandler(
   const { db: database } = await getAndInitConfig(folderPath)
   const repo = new AppSettingsRepository(database)
   repo.setSetting(APP_SETTING_KEYS.CLIP_ENABLED, settings.aiEnabled, 'boolean')
+  repo.setSetting(
+    APP_SETTING_KEYS.FACE_ENABLED,
+    settings.faceEnabled ?? true,
+    'boolean',
+  )
+  const faceDetectionModel = settings.faceDetectionModel || 'owlvit-general'
+  repo.setSetting(
+    APP_SETTING_KEYS.FACE_DETECTION_MODEL,
+    faceDetectionModel,
+    'string',
+  )
+  repo.setSetting(
+    APP_SETTING_KEYS.FACE_DETECTION_THRESHOLD,
+    faceDetectionModel === 'deepghs-anime-v1.4-n' ? 0.3 : 0.12,
+    'number',
+  )
   repo.setSetting(
     APP_SETTING_KEYS.CLIP_CURRENT_MODEL,
     settings.clipModel,

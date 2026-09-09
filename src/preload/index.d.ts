@@ -13,6 +13,7 @@ import {
   SettingValue,
   ValueTypeMap,
   InferValueTypeKey,
+  FaceGroupModel,
 } from '@main/types/models.shared'
 
 declare global {
@@ -58,6 +59,41 @@ declare global {
         ) => Promise<void>
       }
 
+      faces: {
+        getGroups: (
+          folderPath: string,
+          includeHidden?: boolean,
+        ) => Promise<FaceGroupModel[]>
+        scan: (
+          folderPath: string,
+          options?: { rescan?: boolean },
+        ) => Promise<{ scanned: number; faces: number; failed: number }>
+        renameGroup: (
+          folderPath: string,
+          groupId: number,
+          name: string | null,
+        ) => Promise<FaceGroupModel | undefined>
+        mergeGroups: (
+          folderPath: string,
+          targetGroupId: number,
+          sourceGroupIds: number[],
+        ) => Promise<FaceGroupModel[]>
+        setGroupHidden: (
+          folderPath: string,
+          groupId: number,
+          hidden: boolean,
+        ) => Promise<FaceGroupModel | undefined>
+        getStats: (folderPath: string) => Promise<{
+          faces: number
+          groups: number
+          scannedImages: number
+          pendingImages: number
+        }>
+        clearIndex: (
+          folderPath: string,
+        ) => Promise<{ faces: number; groups: number }>
+      }
+
       folders: {
         getAll: (folderPath: string) => Promise<FolderModel[]>
         add: (
@@ -87,6 +123,8 @@ declare global {
           folderPath: string,
           settings: {
             aiEnabled: boolean
+            faceEnabled: boolean
+            faceDetectionModel: string
             clipModel: string
             thumbnailQuality: number | null
           },
@@ -106,8 +144,16 @@ declare global {
           imagesIds?: number[],
           filter?: SearchFilter,
         ) => Promise<void>
-        rename: (folderPath: string, tagId: number, newName: string) => Promise<TagModel>
-        setParent: (folderPath: string, tagId: number, parentId: number | null) => Promise<TagModel>
+        rename: (
+          folderPath: string,
+          tagId: number,
+          newName: string,
+        ) => Promise<TagModel>
+        setParent: (
+          folderPath: string,
+          tagId: number,
+          parentId: number | null,
+        ) => Promise<TagModel>
         delete: (folderPath: string, tagId: number) => Promise<void>
         getAll: (folderPath: string) => Promise<TagModel[]>
         getBySearch: (folderPath: string, query: string) => Promise<TagModel[]>
@@ -130,8 +176,11 @@ declare global {
 
       settings: {
         getAll: (folderPath: string) => Promise<AppSettingModel[]>
-        get: (folderPath: string, key: string) => Promise<AppSettingModel | undefined>
-        getValue<T  = SettingValue>(
+        get: (
+          folderPath: string,
+          key: string,
+        ) => Promise<AppSettingModel | undefined>
+        getValue<T = SettingValue>(
           folderPath: string,
           key: string,
         ): Promise<T | undefined>

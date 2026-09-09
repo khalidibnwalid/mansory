@@ -9,6 +9,7 @@ import { ThumbnailSettingsCard } from './-components/ThumbnailSettingsCard'
 import { AiSearchSettingsCard } from './-components/AiSearchSettingsCard'
 import { KeybindingsSettingsCard } from './-components/KeybindingsSettingsCard'
 import { useState } from 'react'
+import { FaceRecognitionSettingsCard } from './-components/FaceRecognitionSettingsCard'
 
 export const Route = createFileRoute('/settings/')({
   component: ComponentPage,
@@ -33,7 +34,9 @@ function ComponentPage() {
 }
 
 function SettingsContent({ folderPath }: { folderPath: string }) {
-  const [activeTab, setActiveTab] = useState<'general' | 'keybindings'>('general')
+  const [activeTab, setActiveTab] = useState<'general' | 'keybindings'>(
+    'general',
+  )
 
   return (
     <div className="flex h-full w-full overflow-hidden">
@@ -53,7 +56,10 @@ function SettingsContent({ folderPath }: { folderPath: string }) {
             activeTab === 'general' && 'bg-primary! text-primary-foreground',
           )}
         >
-          <GearIcon className="size-5" weight={activeTab === 'general' ? 'fill' : 'regular'} />
+          <GearIcon
+            className="size-5"
+            weight={activeTab === 'general' ? 'fill' : 'regular'}
+          />
           General
         </Button>
 
@@ -62,10 +68,14 @@ function SettingsContent({ folderPath }: { folderPath: string }) {
           onClick={() => setActiveTab('keybindings')}
           className={cn(
             'w-full justify-start h-9 pr-3 text-sm font-semibold rounded-md transition-all duration-150 cursor-pointer',
-            activeTab === 'keybindings' && 'bg-primary! text-primary-foreground',
+            activeTab === 'keybindings' &&
+              'bg-primary! text-primary-foreground',
           )}
         >
-          <KeyboardIcon className="size-5" weight={activeTab === 'keybindings' ? 'fill' : 'regular'} />
+          <KeyboardIcon
+            className="size-5"
+            weight={activeTab === 'keybindings' ? 'fill' : 'regular'}
+          />
           Keybindings
         </Button>
       </div>
@@ -79,7 +89,7 @@ function SettingsContent({ folderPath }: { folderPath: string }) {
             </h1>
             <p className="text-muted-foreground text-sm">
               {activeTab === 'general'
-                ? 'Manage your gallery preferences, image compression quality, and AI model search parameters.'
+                ? 'Manage thumbnails, face recognition, and local AI search preferences.'
                 : 'Configure keyboard shortcuts to navigate the application quickly.'}
             </p>
           </div>
@@ -90,6 +100,7 @@ function SettingsContent({ folderPath }: { folderPath: string }) {
             <>
               <ThumbnailSettingsCard folderPath={folderPath} />
               <AiSearchSettingsCard folderPath={folderPath} />
+              <FaceRecognitionSettingsCard folderPath={folderPath} />
             </>
           ) : (
             <KeybindingsSettingsCard />

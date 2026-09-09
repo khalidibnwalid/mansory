@@ -36,6 +36,12 @@ const QUERIES = {
     if (currentTags) key.push(currentTags)
     return key as readonly (number | string | string[])[]
   },
+  FACE_GROUPS: (folderPath?: string, includeHidden = false) => {
+    const key: (string | boolean)[] = ['faces', 'groups']
+    if (folderPath) key.push(folderPath)
+    if (includeHidden) key.push(true)
+    return key as readonly (string | boolean)[]
+  },
 }
 
 export default QUERIES

@@ -11,6 +11,9 @@ export const NOTIFIER_EVENTS = {
   CLIP: {
     STATUS: 'clip-status',
   } as const,
+  FACES: {
+    SCAN: 'face-scan',
+  } as const,
   LIBRARY: {
     CHANGED: 'library-changed',
   } as const,

@@ -1,23 +1,32 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { FolderIcon, SidebarSimpleIcon, TagIcon } from '@phosphor-icons/react'
+import {
+  FolderIcon,
+  SidebarSimpleIcon,
+  TagIcon,
+  UsersThreeIcon,
+} from '@phosphor-icons/react'
 
 interface RibbonProps {
   isSidebarOpen: boolean
   showFolders: boolean
   showTags: boolean
+  showFaces: boolean
   onToggleSidebar: () => void
   onToggleFolders: () => void
   onToggleTags: () => void
+  onToggleFaces: () => void
 }
 
 export function Ribbon({
   isSidebarOpen,
   showFolders,
   showTags,
+  showFaces,
   onToggleSidebar,
   onToggleFolders,
   onToggleTags,
+  onToggleFaces,
 }: RibbonProps) {
   return (
     <div className="w-16 h-full border-e border-border/40 bg-background/25 backdrop-blur-md flex flex-col items-center py-4 gap-3 z-40 shrink-0 pt-16 select-none">
@@ -75,6 +84,24 @@ export function Ribbon({
         <TagIcon
           className="size-5"
           weight={isSidebarOpen && showTags ? 'fill' : 'regular'}
+        />
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className={cn(
+          'size-10 rounded-xl cursor-pointer transition-all duration-200 active:scale-95',
+          isSidebarOpen && showFaces
+            ? 'text-primary hover:bg-accent/50 bg-accent/20'
+            : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
+        )}
+        onClick={onToggleFaces}
+        title="Toggle People & Characters"
+      >
+        <UsersThreeIcon
+          className="size-5"
+          weight={isSidebarOpen && showFaces ? 'fill' : 'regular'}
         />
       </Button>
     </div>

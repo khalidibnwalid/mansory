@@ -5,16 +5,21 @@ import { useSettingsStore } from '@/lib/store/settings'
 import { cn } from '@/lib/utils'
 import { Ribbon } from './Ribbon'
 import { ResizableSidebar } from './ResizableSidebar'
+import { FacesExplorer } from '../faces/FacesExplorer'
 
 export function SidebarFilters() {
   const { isFolderTreeOpen, toggleFolderTree } = useSettingsStore()
-  const [showFolders, setShowFolders] = useLocalStorage('sidebar-show-folders', true)
+  const [showFolders, setShowFolders] = useLocalStorage(
+    'sidebar-show-folders',
+    true,
+  )
   const [showTags, setShowTags] = useLocalStorage('sidebar-show-tags', true)
+  const [showFaces, setShowFaces] = useLocalStorage('sidebar-show-faces', false)
 
   const handleToggleFolders = () => {
     if (isFolderTreeOpen) {
       if (showFolders) {
-        if (!showTags) {
+        if (!showTags && !showFaces) {
           // Folders is the only one open, collapse the sidebar
           toggleFolderTree()
         } else {
@@ -35,7 +40,7 @@ export function SidebarFilters() {
   const handleToggleTags = () => {
     if (isFolderTreeOpen) {
       if (showTags) {
-        if (!showFolders) {
+        if (!showFolders && !showFaces) {
           // Tags is the only one open, collapse the sidebar
           toggleFolderTree()
         } else {
@@ -53,15 +58,28 @@ export function SidebarFilters() {
     }
   }
 
+  const handleToggleFaces = () => {
+    if (isFolderTreeOpen) {
+      if (showFaces) {
+        if (!showFolders && !showTags) toggleFolderTree()
+        else setShowFaces(false)
+      } else setShowFaces(true)
+    } else {
+      setShowFaces(true)
+      toggleFolderTree()
+    }
+  }
+
   const handleToggleSidebar = () => {
     // If we are opening the sidebar, make sure at least folders is visible if both were false
-    if (!isFolderTreeOpen && !showFolders && !showTags) {
+    if (!isFolderTreeOpen && !showFolders && !showTags && !showFaces) {
       setShowFolders(true)
     }
     toggleFolderTree()
   }
 
-  const isSidebarOpen = isFolderTreeOpen && (showFolders || showTags)
+  const isSidebarOpen =
+    isFolderTreeOpen && (showFolders || showTags || showFaces)
 
   return (
     <div className="sticky top-0 h-full z-30 flex shrink-0 select-none">
@@ -69,21 +87,28 @@ export function SidebarFilters() {
         isSidebarOpen={isSidebarOpen}
         showFolders={showFolders}
         showTags={showTags}
+        showFaces={showFaces}
         onToggleSidebar={handleToggleSidebar}
         onToggleFolders={handleToggleFolders}
         onToggleTags={handleToggleTags}
+        onToggleFaces={handleToggleFaces}
       />
 
-      <ResizableSidebar
-        isOpen={isSidebarOpen}
-        onToggle={handleToggleSidebar}
-      >
+      <ResizableSidebar isOpen={isSidebarOpen} onToggle={handleToggleSidebar}>
         {showFolders && <FolderTree className="flex-1 min-h-0" />}
         {showTags && (
           <TagsExplorer
             className={cn(
               'flex-1 min-h-0',
               showFolders && 'border-t border-border/40',
+            )}
+          />
+        )}
+        {showFaces && (
+          <FacesExplorer
+            className={cn(
+              'flex-1 min-h-0',
+              (showFolders || showTags) && 'border-t border-border/40',
             )}
           />
         )}

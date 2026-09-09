@@ -43,6 +43,7 @@
     "clsx": "^2.1.1",
     "electron-updater": "^6.3.9",
     "exifreader": "^4.41.0",
+    "onnxruntime-node": "1.24.3",
     "radix-ui": "^1.5.0",
     "sharp": "^0.35.2",
     "sonner": "^2.0.7",

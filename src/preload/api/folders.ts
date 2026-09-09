@@ -35,6 +35,8 @@ const foldersApi = {
     folderPath: string,
     settings: {
       aiEnabled: boolean
+      faceEnabled: boolean
+      faceDetectionModel: string
       clipModel: string
       thumbnailQuality: number | null
     },

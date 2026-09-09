@@ -126,6 +126,9 @@ import {
   CLIP_TEXT_TO_IMAGE_THRESHOLD_DEFAULT,
   ClipModelConfig,
   THUMBNAIL_QUALITY_DEFAULT,
+  FACE_DETECTION_THRESHOLD_DEFAULT,
+  FACE_GROUPING_THRESHOLD_DEFAULT,
+  FACE_DETECTION_MODEL_DEFAULT,
 } from '@/lib/types/appSettingsKeys'
 import { SettingValue } from '@main/types/models.shared'
 
@@ -251,6 +254,47 @@ export function useThumbnailQuality(folderPath: string | null) {
     enabled: !!folderPath,
     staleTime: 5 * 60 * 1000,
   })
+}
+
+function useSettingValue<T extends SettingValue>(
+  folderPath: string | null,
+  key: string,
+  fallback: T,
+) {
+  return useQuery<T>({
+    queryKey: ['settings', key, folderPath],
+    queryFn: async () => {
+      if (!folderPath || !window.api?.settings.getValue) return fallback
+      const value = await window.api.settings.getValue<T>(folderPath, key)
+      return value !== undefined ? value : fallback
+    },
+    enabled: !!folderPath,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useFaceSettings(folderPath: string | null) {
+  const enabled = useSettingValue(
+    folderPath,
+    APP_SETTING_KEYS.FACE_ENABLED,
+    true,
+  )
+  const detectionThreshold = useSettingValue(
+    folderPath,
+    APP_SETTING_KEYS.FACE_DETECTION_THRESHOLD,
+    FACE_DETECTION_THRESHOLD_DEFAULT,
+  )
+  const groupingThreshold = useSettingValue(
+    folderPath,
+    APP_SETTING_KEYS.FACE_GROUPING_THRESHOLD,
+    FACE_GROUPING_THRESHOLD_DEFAULT,
+  )
+  const detectionModel = useSettingValue(
+    folderPath,
+    APP_SETTING_KEYS.FACE_DETECTION_MODEL,
+    FACE_DETECTION_MODEL_DEFAULT,
+  )
+  return { enabled, detectionModel, detectionThreshold, groupingThreshold }
 }
 
 export function useUpdateSettingMutation(folderPath: string) {

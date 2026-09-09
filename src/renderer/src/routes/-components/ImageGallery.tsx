@@ -18,6 +18,7 @@ export function ImageGallery() {
     filter?.tags,
     filter?.tagMode,
     filter?.excludedTags,
+    filter?.faceGroupIds,
     filter?.text,
     filter?.color,
     filter?.aiSearchText,
