@@ -138,6 +138,13 @@ class WatcherService {
         })
       }
 
+      // 3b. A move seen half-way by an earlier scan leaves a duplicate row at
+      // the new path; fold it back into the original record
+      const merged = imageRepo.mergeMovedDuplicates()
+      if (merged > 0) {
+        console.log(`Watcher: merged ${merged} moved images with duplicates`)
+      }
+
       // 4. Same-path recovery for images that reappeared
       const softDeletedAtCurrentPaths =
         imageRepo.getSoftDeletedImagesAtPaths(currentPaths)

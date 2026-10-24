@@ -660,6 +660,93 @@ export class ImageRepository {
     return ids.length
   }
 
+  /**
+   * Handles a move that a scan observed half-way: the file was listed at its
+   * new path (inserted as an `is_duplicate` row of the still-present original)
+   * and the old path was only found missing on a later scan. Folds the
+   * duplicate row back into the soft-deleted original so tags and metadata
+   * survive. Returns the number of merged images.
+   */
+  mergeMovedDuplicates(): number {
+    const pairs = this.db
+      .prepare(
+        `SELECT d.id AS oldId, a.id AS dupId
+         FROM images d
+         JOIN images a
+           ON a.hash = d.hash
+          AND a.deleted_at IS NULL
+          AND a.is_duplicate = 1
+          AND a.id > d.id
+         WHERE d.deleted_at IS NOT NULL AND d.hash IS NOT NULL`,
+      )
+      .all() as { oldId: number; dupId: number }[]
+    if (pairs.length === 0) return 0
+
+    const vecTables = this.db
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND sql LIKE 'CREATE VIRTUAL TABLE%' AND (name = 'vec_images' OR name LIKE 'vec_images_%')",
+      )
+      .all() as { name: string }[]
+    const deleteVecStmts = vecTables.map(t =>
+      this.db.prepare(`DELETE FROM ${t.name} WHERE image_id = ?`),
+    )
+    const getDup = this.db.prepare(
+      `SELECT file_path, file_name, extension, size, modified_at,
+              thumbnail_path, width, height, dominant_colors, exif
+       FROM images WHERE id = ?`,
+    )
+    const deleteColors = this.db.prepare(
+      'DELETE FROM image_colors WHERE image_id = ?',
+    )
+    const deleteTags = this.db.prepare(
+      'DELETE FROM image_tags WHERE image_id = ?',
+    )
+    const deleteImage = this.db.prepare('DELETE FROM images WHERE id = ?')
+    const restore = this.db.prepare(`
+      UPDATE images
+      SET file_path = ?, file_name = ?, extension = ?, size = ?,
+          modified_at = ?, thumbnail_path = COALESCE(?, thumbnail_path),
+          width = COALESCE(?, width), height = COALESCE(?, height),
+          dominant_colors = COALESCE(?, dominant_colors),
+          exif = COALESCE(?, exif),
+          last_scanned = CURRENT_TIMESTAMP,
+          deleted_at = NULL, is_duplicate = 0
+      WHERE id = ?
+    `)
+
+    let merged = 0
+    const claimed = new Set<number>()
+    this.db.transaction(() => {
+      for (const { oldId, dupId } of pairs) {
+        if (claimed.has(dupId)) continue
+        claimed.add(dupId)
+        const dup = getDup.get(dupId) as any
+        if (!dup) continue
+
+        deleteColors.run(dupId)
+        deleteTags.run(dupId)
+        for (const stmt of deleteVecStmts) stmt.run(BigInt(dupId))
+        deleteImage.run(dupId)
+
+        restore.run(
+          dup.file_path,
+          dup.file_name,
+          dup.extension,
+          dup.size,
+          dup.modified_at,
+          dup.thumbnail_path,
+          dup.width,
+          dup.height,
+          dup.dominant_colors,
+          dup.exif,
+          oldId,
+        )
+        merged++
+      }
+    })()
+    return merged
+  }
+
   hasActiveImageWithHash(hash: string): boolean {
     const stmt = this.db.prepare(`
       SELECT 1 FROM images
