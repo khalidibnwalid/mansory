@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: gallery
+appId: com.khalidw.Mansory
+productName: Mansory
 directories:
   buildResources: build
 files:
@@ -8,12 +8,15 @@ files:
   - '!electron.vite.config.{js,ts,mjs,cjs}'
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!**/node_modules/**/@img/*musl*/**'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
   - "**/node_modules/sqlite-vec-*/**"
+  - "**/node_modules/@img/**"
+  - "**/node_modules/sharp/**"
 win:
-  executableName: gallery
+  executableName: mansory
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -34,8 +37,23 @@ linux:
     - AppImage
     - snap
     - deb
-  maintainer: electronjs.org
+  maintainer: Mansory
+  executableName: mansory
+  syncDesktopName: true
   category: Utility
+flatpak:
+  runtime: org.freedesktop.Platform
+  runtimeVersion: '24.08'
+  sdk: org.freedesktop.Sdk
+  base: org.electronjs.Electron2.BaseApp
+  baseVersion: '24.08'
+  finishArgs:
+    - --socket=wayland
+    - --socket=x11
+    - --share=ipc
+    - --device=dri
+    - --share=network
+    - --filesystem=home
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
