@@ -47,6 +47,17 @@ flatpak:
   sdk: org.freedesktop.Sdk
   base: org.electronjs.Electron2.BaseApp
   baseVersion: '24.08'
+  files:
+    - - build/flatpak-icons/512.png
+      - /share/icons/hicolor/512x512/apps/com.khalidw.Mansory.png
+    - - build/flatpak-icons/256.png
+      - /share/icons/hicolor/256x256/apps/com.khalidw.Mansory.png
+    - - build/flatpak-icons/128.png
+      - /share/icons/hicolor/128x128/apps/com.khalidw.Mansory.png
+    - - build/flatpak-icons/64.png
+      - /share/icons/hicolor/64x64/apps/com.khalidw.Mansory.png
+    - - build/flatpak-icons/48.png
+      - /share/icons/hicolor/48x48/apps/com.khalidw.Mansory.png
   finishArgs:
     - --socket=wayland
     - --socket=x11
